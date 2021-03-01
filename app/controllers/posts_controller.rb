@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 class PostsController < ApplicationController
-
   def index
-    @posts = Post.all.limit(10)
+    @posts = Post.all.limit(10).order('created_at DESC')
     @post = Post.new
-    data = @posts.to_json({ :include => [:user, :photos] })
+    data = @posts.to_json({ include: %i[user photos] })
     json_response(data, :created)
   end
 
