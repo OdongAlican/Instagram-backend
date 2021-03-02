@@ -24,23 +24,25 @@ class PostsController < ApplicationController
   end
 
   def show
-    @photos = @post.photos
-    @likes = @post.likes.to_json({ include: ['user'] })
+    # @photos = @post.photos
+    # @likes = @post.likes.to_json({ include: ['user'] })
     @is_liked = @post.is_liked(current_user)
+    @result = @post.to_json({ include: %w[user likes photos] })
+    json_response(@result, :created)
   end
 
   def destroy
     if @post.user = current_user
       if @post.destroy
-        data = { message: 'post destroyed' }
-        json_response(data, :no_content)
+        data = { 'message' => 'post destroyed' }
+        return json_response(data, :no_content)
       else
-        data = { message: 'Something went wrong' }
-        json_response(data, :no_content)
+        data = { 'message' => 'Something went wrong' }
+        return json_response(data, :no_content)
       end
     else
       data = { message: "You don't have permission to delete this Post" }
-      json_response(data, :no_content)
+      return json_response(data, :no_content)
     end
   end
 
