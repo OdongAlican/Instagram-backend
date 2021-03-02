@@ -5,7 +5,8 @@ Rails.application.routes.draw do
   post 'signup', to: 'users#create'
   resources :users, only: %i[show update]
 
-  resources :posts, only: %i[index show create] do
+  resources :posts, only: %i[index show create destroy] do
     resources :photos, only: [:create]
+    resources :likes, only: %i[create destroy]
   end
 end
