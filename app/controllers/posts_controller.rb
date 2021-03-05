@@ -6,7 +6,10 @@ class PostsController < ApplicationController
   def index
     @posts = Post.all.limit(10).order('created_at DESC')
     @post = Post.new
-    data = @posts.to_json({ include: ['user', 'photos', { likes: { include: 'user' } }, { comments: { include: 'user' } }] })
+    data = @posts.to_json({ include: ['user', 'photos',
+                                      { likes: { include: 'user' } },
+                                      { comments: { include: 'user' } },
+                                      { bookmarks: { include: 'user' } }] })
     json_response(data, :created)
   end
 
@@ -25,7 +28,10 @@ class PostsController < ApplicationController
 
   def show
     @is_liked = @post.is_liked(current_user)
-    @result = @post.to_json({ include: %i[user likes photos comments] })
+    @result = @post.to_json({ include: ['user', 'photos',
+                                        { likes: { include: 'user' } },
+                                        { comments: { include: 'user' } },
+                                        { bookmarks: { include: 'user' } }] })
     json_response(@result, :created)
   end
 
