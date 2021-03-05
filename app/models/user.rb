@@ -5,4 +5,5 @@ class User < ApplicationRecord
   validates_presence_of :name, :email, :password_digest
   has_many :posts, dependent: :destroy
   has_many :likes, dependent: :destroy
+  has_many :comments, dependent: :destroy
 end
