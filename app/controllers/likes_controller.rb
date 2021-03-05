@@ -15,8 +15,15 @@ class LikesController < ApplicationController
   def destroy
     @like = Like.find(params[:id])
     @post = @like.post
-    data = { message: 'Post disiked' }
-    json_response(data, :no_content) if @like.destroy
+    if current_user.id == @like.user_id
+      if @like.destroy
+        json_response({ message: 'Post disiked' }, :no_content)
+      else
+        json_response({ message: 'Something went wrong' })
+      end
+    else
+      json_response({ message: 'Not Authorized' }, :unauthorized)
+    end
   end
 
   private
