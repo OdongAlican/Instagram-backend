@@ -3,7 +3,10 @@
 Rails.application.routes.draw do
   post 'auth/login', to: 'authentication#authenticate'
   post 'signup', to: 'users#create'
-  resources :users, only: %i[index show update]
+  resources :users, only: %i[index show update] do
+      post '/users/:id/follow', to: "users#follow"
+      post '/users/:id/unfollow', to: "users#unfollow"
+  end
 
   resources :posts, only: %i[index show create destroy] do
     resources :photos, only: [:create]
