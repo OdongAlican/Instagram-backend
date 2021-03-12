@@ -18,7 +18,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    json_response(@user.to_json({ include: %i[followees followers]}))
+    json_response(@user.to_json({ include: %i[followees followers] }))
   end
 
   def follow
