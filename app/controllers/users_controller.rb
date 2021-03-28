@@ -11,10 +11,24 @@ class UsersController < ApplicationController
   end
 
   def create
-    user = User.create!(user_params)
-    auth_token = AuthenticateUser.new(user.email, user.password).call
-    response = { message: Message.account_created, auth_token: auth_token, user: user }
-    json_response(response, :created)
+    @user = User.create(user_params)
+    if @user.valid?
+      token = encode_token({ user_id: @user.id })
+      render json: { user: @user, token: token }, status: :ok
+    else
+      render json: { error: 'Invalid username or password' }, status: :unprocessable_entity
+    end
+  end
+
+  def login
+    @user = User.find_by(username: params[:username])
+
+    if @user&.authenticate(params[:password])
+      token = encode_token({ user_id: @user.id })
+      render json: { user: @user, token: token }, status: :ok
+    else
+      render json: { error: 'Invalid username or password' }, status: :unauthorized
+    end
   end
 
   def show
