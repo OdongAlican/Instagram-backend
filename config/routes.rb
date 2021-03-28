@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :users, only: %i[index show update] do
     post '/users/:id/follow', to: 'users#follow'
     post '/users/:id/unfollow', to: 'users#unfollow'
+    get '/users/:id/nonfollow', to: 'users#peopleToFollow'
   end
 
   resources :posts, only: %i[index show create destroy] do

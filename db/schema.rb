@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_210_311_151_530) do
+ActiveRecord::Schema.define(version: 20_210_312_204_449) do
   create_table 'bookmarks', force: :cascade do |t|
     t.integer 'post_id', null: false
     t.integer 'user_id', null: false
@@ -36,6 +36,8 @@ ActiveRecord::Schema.define(version: 20_210_311_151_530) do
     t.string 'title'
     t.datetime 'created_at', precision: 6, null: false
     t.datetime 'updated_at', precision: 6, null: false
+    t.integer 'user_id'
+    t.integer 'reciever_id'
   end
 
   create_table 'follows', force: :cascade do |t|
