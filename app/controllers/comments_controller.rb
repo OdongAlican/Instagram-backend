@@ -5,7 +5,15 @@ class CommentsController < ApplicationController
     @comment = Comment.new(comment_params)
     if @comment.save
       @post = @comment.post
-      json_response(@post.to_json({ include: 'comments' }), :created)
+      @posts = Post.all.limit(10).order('created_at DESC')
+      nonFollowedList = Post.currentUserFollowers(current_user['id'])
+      data = @posts.to_json({ include: ['user', 'photos',
+                                        { likes: { include: 'user' } },
+                                        { comments: { include: 'user' } },
+                                        { bookmarks: { include: 'user' } }] })
+  
+      final = { data: data, followeesList: nonFollowedList }
+      json_response(final, :created)
     else
       json_response({ message: 'Something went Wrong' }, :no_content)
     end
