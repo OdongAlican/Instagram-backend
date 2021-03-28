@@ -11,7 +11,7 @@ class AuthenticateUser
     JsonWebToken.encode(user_id: user.id) if user
   end
 
-  def current_user
+  def the_current_user
     logged_in_user = User.find_by(email: email)
     return logged_in_user if user&.authenticate(password)
 
