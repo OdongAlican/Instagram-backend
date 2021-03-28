@@ -18,7 +18,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    json_response(@user.to_json({ include: %i[followees followers] }))
+    json_response(@user.to_json({ include: %i[comments likes posts followees followers] }))
   end
 
   def follow
@@ -28,6 +28,11 @@ class UsersController < ApplicationController
     else
       json_response({ message: 'You cannot follow yourself' }, :unauthorized)
     end
+  end
+
+  def peopleToFollow
+    result = User.nonFollowers(current_user.id)
+    json_response(result, :created)
   end
 
   def unfollow
