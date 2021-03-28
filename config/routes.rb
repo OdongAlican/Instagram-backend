@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  post 'auth/login', to: 'authentication#authenticate'
+  post 'auth/login', to: 'users#login'
   post 'signup', to: 'users#create'
 
   resources :conversations, only: %i[index create]
