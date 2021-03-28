@@ -5,12 +5,14 @@ class PostsController < ApplicationController
 
   def index
     @posts = Post.all.limit(10).order('created_at DESC')
-    @post = Post.new
+    nonFollowedList = Post.currentUserFollowers(current_user['id'])
     data = @posts.to_json({ include: ['user', 'photos',
                                       { likes: { include: 'user' } },
                                       { comments: { include: 'user' } },
                                       { bookmarks: { include: 'user' } }] })
-    json_response(data, :created)
+
+    final = { data: data, followeesList: nonFollowedList }
+    json_response(final, :created)
   end
 
   def create
@@ -27,7 +29,6 @@ class PostsController < ApplicationController
   end
 
   def show
-    @is_liked = @post.is_liked(current_user)
     @result = @post.to_json({ include: ['user', 'photos',
                                         { likes: { include: 'user' } },
                                         { comments: { include: 'user' } },
