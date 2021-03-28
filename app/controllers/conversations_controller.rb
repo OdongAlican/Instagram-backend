@@ -3,11 +3,14 @@
 class ConversationsController < ApplicationController
   def index
     conversations = Conversation.all
-    render json: conversations
+    # render json: conversations
+    data = conversations.to_json({ include: %w[user messagings] })
+    render json: data
   end
 
   def create
-    conversation = Conversation.new(conversation_params)
+    conversation = current_user.conversations.build(conversation_params)
+    # conversation = Conversation.new(conversation_params)
     if conversation.save
       serialized_data = ActiveModelSerializers::Adapter::Json.new(
         ConversationSerializer.new(conversation)
@@ -20,6 +23,6 @@ class ConversationsController < ApplicationController
   private
 
   def conversation_params
-    params.require(:conversation).permit(:title)
+    params.require(:conversation).permit(:title, :reciever_id, :user_id)
   end
 end
