@@ -11,7 +11,7 @@ class CommentsController < ApplicationController
                                         { likes: { include: 'user' } },
                                         { comments: { include: 'user' } },
                                         { bookmarks: { include: 'user' } }] })
-  
+
       final = { data: data, followeesList: nonFollowedList }
       json_response(final, :created)
     else
