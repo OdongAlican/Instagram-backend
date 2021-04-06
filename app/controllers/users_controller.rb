@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  skip_before_action :authorize_request, only: :create
+  before_action :authorized, only: [:auto_login]
   before_action :set_user, only: %i[show update destroy follow unfollow]
-  # POST /signup
-  # return authenticated token upon signup
   def index
     @users = User.all.to_json({ include: %i[comments likes posts followees followers] })
     json_response(@users, :created)
@@ -21,14 +19,19 @@ class UsersController < ApplicationController
   end
 
   def login
-    @user = User.find_by(username: params[:username])
+    @user = User.find_by(email: params[:email])
 
     if @user&.authenticate(params[:password])
       token = encode_token({ user_id: @user.id })
+      sample(@user)
       render json: { user: @user, token: token }, status: :ok
     else
       render json: { error: 'Invalid username or password' }, status: :unauthorized
     end
+  end
+
+  def auto_login
+    render json: @user
   end
 
   def show
