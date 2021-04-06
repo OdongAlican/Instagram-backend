@@ -5,19 +5,34 @@ class BookmarksController < ApplicationController
     @bookmark = current_user.bookmarks.build(bookmark_params)
     @post = @bookmark.post
     if @bookmark.save
-      data = { message: 'Post bookmarked' }
-      json_response(data, :created)
+      @posts = Post.all.limit(10).order('created_at DESC')
+      nonFollowedList = Post.currentUserFollowers(current_user['id'])
+      data = @posts.to_json({ include: ['user', 'photos',
+                                        { likes: { include: 'user' } },
+                                        { comments: { include: 'user' } },
+                                        { bookmarks: { include: 'user' } }] })
+
+      final = { data: data, followeesList: nonFollowedList }
+      json_response(final, :created)
     else
       json_response({ message: 'Post already bookmarked' })
     end
   end
 
   def destroy
-    @bookmark = bookmark.find(params[:id])
+    @bookmark = Bookmark.find(params[:id])
     @post = @bookmark.post
     if current_user.id == @bookmark.user_id
       if @bookmark.destroy
-        json_response({ message: 'Post unbookmarked' }, :no_content)
+        @posts = Post.all.limit(10).order('created_at DESC')
+        nonFollowedList = Post.currentUserFollowers(current_user['id'])
+        data = @posts.to_json({ include: ['user', 'photos',
+                                          { likes: { include: 'user' } },
+                                          { comments: { include: 'user' } },
+                                          { bookmarks: { include: 'user' } }] })
+
+        final = { data: data, followeesList: nonFollowedList }
+        json_response(final, :created)
       else
         json_response({ message: 'Something went wrong' })
       end
