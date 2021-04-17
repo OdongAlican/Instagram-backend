@@ -6,8 +6,6 @@ class ApplicationController < ActionController::API
   include Response
   include ExceptionHandler
 
-  @@newguy = ''
-
   def encode_token(payload)
     JWT.encode(payload, 's3cr3t')
   end
@@ -20,27 +18,22 @@ class ApplicationController < ActionController::API
     if auth_header
       token = auth_header.split(' ')[1]
       begin
-        JWT.decode(@token, 's3cr3t', true, algorithm: 'HS256')
+        JWT.decode(token, 's3cr3t', true, algorithm: 'HS256')
       rescue JWT::DecodeError
         nil
       end
     end
   end
 
-  def sample(user)
-    @@newguy = user
-  end
-
   def current_user
     if decoded_token
       user_id = decoded_token[0]['user_id']
-      @@newguy = User.find_by(id: user_id)
-    else
-      @@newguy
+      @user = User.find_by(id: user_id)
     end
   end
 
   def logged_in?
+    p current_user
     !!current_user
   end
 

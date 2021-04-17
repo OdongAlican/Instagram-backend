@@ -6,7 +6,6 @@ class PostsController < ApplicationController
   def index
     @posts = Post.all.limit(10).order('created_at DESC')
     nonFollowedList = Post.currentUserFollowers(current_user['id'])
-
     data = @posts.to_json({ include: ['user', 'photos',
                                       { likes: { include: 'user' } },
                                       { comments: { include: 'user' } },
