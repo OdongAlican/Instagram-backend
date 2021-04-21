@@ -29,8 +29,11 @@ class PostsController < ApplicationController
   end
 
   def show
-    @result = @post.to_json({ include: ['user', 'photos',
+    @result = @post.to_json({ include: ['photos',
                                         { likes: { include: 'user' } },
+                                        { user: { include: [{
+                                          posts: { include: %w[comments likes] }
+                                        }, 'followees'] } },
                                         { comments: { include: 'user' } },
                                         { bookmarks: { include: 'user' } }] })
     json_response(@result, :created)
