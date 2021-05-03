@@ -3,13 +3,13 @@
 Rails.application.routes.draw do
   post 'auth/login', to: 'users#login'
   post 'signup', to: 'users#create'
+  post 'users/:id/follow', to: 'users#follow'
+  post '/users/:id/unfollow', to: 'users#unfollow'
 
   resources :conversations, only: %i[index create]
   resources :messagings, only: [:create]
 
   resources :users, only: %i[index show update] do
-    post '/users/:id/follow', to: 'users#follow'
-    post '/users/:id/unfollow', to: 'users#unfollow'
     get '/users/:id/nonfollow', to: 'users#peopleToFollow'
   end
 
