@@ -33,7 +33,7 @@ class ApplicationController < ActionController::API
   end
 
   def logged_in?
-    p current_user
+    current_user
     !!current_user
   end
 
