@@ -33,7 +33,7 @@ class PostsController < ApplicationController
                                         { likes: { include: 'user' } },
                                         { user: { include: [{
                                           posts: { include: %w[comments likes] }
-                                        }, 'followees'] } },
+                                        }, 'followers'] } },
                                         { comments: { include: 'user' } },
                                         { bookmarks: { include: 'user' } }] })
     json_response(@result, :created)
