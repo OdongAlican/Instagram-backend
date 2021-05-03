@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  before_action :authorized, only: [:auto_login]
-  before_action :set_user, only: %i[show update destroy follow unfollow]
+  before_action :authorized, except: %i[create login]
+  before_action :set_user, only: %i[show update destroy]
+
   def index
     @users = User.all.to_json({ include: %i[comments likes posts followees followers] })
     json_response(@users, :created)
@@ -29,18 +30,23 @@ class UsersController < ApplicationController
     end
   end
 
-  def auto_login
-    render json: @user
-  end
-
   def show
     json_response(@user.to_json({ include: %i[comments likes posts followees followers] }))
   end
 
   def follow
-    if current_user.id != @user.id
-      current_user.followees << @user
-      json_response(@user, :created)
+    @followee = User.find(params[:id])
+
+    if current_user.id != @followee.id
+      current_user.followees << @followee
+      @posts = Post.all.limit(10).order('created_at DESC')
+      nonFollowedList = Post.currentUserFollowers(current_user['id'])
+      data = @posts.to_json({ include: ['user', 'photos',
+                                        { likes: { include: 'user' } },
+                                        { comments: { include: 'user' } },
+                                        { bookmarks: { include: 'user' } }] })
+      final = { data: data, followeesList: nonFollowedList }
+      json_response(final, :created)
     else
       json_response({ message: 'You cannot follow yourself' }, :unauthorized)
     end
@@ -52,9 +58,10 @@ class UsersController < ApplicationController
   end
 
   def unfollow
-    if current_user.id != @user.id
-      current_user.followed_users.find_by(followee_id: @user.id).destroy
-      json_response(@user)
+    @followee = User.find(params[:id])
+    if current_user.id != @followee.id
+      current_user.followed_users.find_by(followee_id: @followee.id).destroy
+      json_response(@followee)
     else
       json_response({ message: 'You cannot unfollow yourself' }, :unauthorized)
     end
